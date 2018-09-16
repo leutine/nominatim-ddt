@@ -16,20 +16,20 @@ def geocode(map_obj=None):
     json_response = request.json()
     # print(json_response)
     if not json_response or 'error' in json_response:
-        # print(error_msg)
+        print(error_msg)
         return error_msg
     else:
         lat = round(float(json_response[0]["lat"]), 5)
         lon = round(float(json_response[0]["lon"]), 5)
         # print("Object: " + json_response[0]["display_name"])
-        # print("Lat: " + str(lat), "Lon: " + str(lon))
+        print("Latitude: " + str(lat), "Longitude: " + str(lon))
         return lat, lon
 
 
 def reverse(lat: float=0.0, lon: float=0.0):
     if not isinstance(lat, float) or not isinstance(lon, float):
         e = "Invalid input!"
-        # print(e)
+        print(e)
         return e
     else:
         error_msg = "Object not found!"
@@ -46,11 +46,11 @@ def reverse(lat: float=0.0, lon: float=0.0):
         json_response = request.json()
         # print(json_response)
         if not json_response or 'error' in json_response:
-            # print(error_msg)
+            print(error_msg)
             return error_msg
         else:
             result = json_response["display_name"]
-            # print(result)
+            print(result)
             return result
 
 
@@ -68,7 +68,11 @@ def main():
         geocode(map_object)
     elif option == 2:
         print("<Reverse geocoding>")
-        lat, lon = input("Enter lattitude and longitude divided by ',': ").split(",")
+        try:
+            lat, lon = input("Enter latitude and longitude divided by ',': ").split(",")
+        except ValueError as e:
+            print(e)
+            return
         reverse(lat, lon)
     else:
         print("Invalid option!")
