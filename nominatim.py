@@ -16,7 +16,7 @@ def geocode(map_obj=None):
     json_response = request.json()
     # print(json_response)
     if not json_response or 'error' in json_response:
-        print(error_msg)
+        # print(error_msg)
         return error_msg
     else:
         lat = round(float(json_response[0]["lat"]), 5)
