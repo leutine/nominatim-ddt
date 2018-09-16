@@ -8,7 +8,11 @@ def geocode(map_obj=None):
     url = 'https://nominatim.openstreetmap.org/search?q=' + \
           map_object_encoded + \
           '&format=json&polygon=0&addressdetails=0'
-    request = requests.get(url)
+    try:
+        request = requests.get(url)
+    except requests.exceptions.RequestException as e:
+        print(e)
+        return
     json_response = request.json()
     # print(json_response)
     if not json_response or 'error' in json_response:
@@ -23,33 +27,54 @@ def geocode(map_obj=None):
 
 
 def reverse(lat: float=0.0, lon: float=0.0):
-    error_msg = "Object not found!"
-    url = 'https://nominatim.openstreetmap.org/reverse?format=json&' + \
-          'lat=' + str(lat) + \
-          '&' + \
-          'lon=' + str(lon) + \
-          '&zoom=18&addressdetails=0'
-    request = requests.get(url)
-    json_response = request.json()
-    # print(json_response)
-    if not json_response or 'error' in json_response:
-        print(error_msg)
-        return error_msg
+    if not isinstance(lat, float) or not isinstance(lon, float):
+        e = "Invalid input!"
+        # print(e)
+        return e
     else:
-        result = json_response["display_name"]
-        print(result)
-        return result
+        error_msg = "Object not found!"
+        url = 'https://nominatim.openstreetmap.org/reverse?format=json&' + \
+              'lat=' + str(lat) + \
+              '&' + \
+              'lon=' + str(lon) + \
+              '&zoom=18&addressdetails=0'
+        try:
+            request = requests.get(url)
+        except requests.exceptions.RequestException as e:
+            print(e)
+            return
+        json_response = request.json()
+        # print(json_response)
+        if not json_response or 'error' in json_response:
+            # print(error_msg)
+            return error_msg
+        else:
+            result = json_response["display_name"]
+            # print(result)
+            return result
+
+
+def main():
+    while True:
+        try:
+            option = int(input("Geocoding (1)\nReverse geocoding (2)\nEnter option: "))
+            break
+        except ValueError:
+            print("That's not a valid option!\n")
+
+    if option == 1:
+        print("<Geocoding>")
+        map_object = input('Enter the name of object (city, street, site, etc.): ')
+        geocode(map_object)
+    elif option == 2:
+        print("<Reverse geocoding>")
+        lat, lon = input("Enter lattitude and longitude divided by ',': ").split(",")
+        reverse(lat, lon)
+    else:
+        print("Invalid option!")
 
 
 if __name__ == "__main__":
-    menu = int(input("Geocode [0]\nReverse [1]\nEnter option: "))
-    if not menu:
-        print("<Geocode>")
-        map_object = input('Enter the name of object (city, street, site, etc.): ')
-        geocode(map_object)
-    else:
-        print("<Reverse>")
-        lat, lon = input("Enter lat and lon: ").split(",")
-        reverse(lat, lon)
+    main()
 
 
